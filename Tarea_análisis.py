@@ -5,7 +5,7 @@ from scipy.linalg import toeplitz
 import cmath
 
 def fft_custom(signal):
-    """Transformada rápida de Fourier (FFT) mediante dividir y conquistar."""
+    """Transformada rápida de Fourier (FFT)."""
     N = len(signal)
     if N <= 1:
         return signal
@@ -15,7 +15,7 @@ def fft_custom(signal):
     return [pares[k] + T[k] for k in range(N // 2)] + [pares[k] - T[k] for k in range(N // 2)]
 
 def ifft_custom(espectro):
-    """Transformada rápida de Fourier inversa (IFFT) mediante dividir y conquistar."""
+    """Transformada rápida de Fourier inversa (IFFT)."""
     N = len(espectro)
     if N <= 1:
         return espectro
@@ -24,10 +24,9 @@ def ifft_custom(espectro):
     T = [cmath.exp(2j * cmath.pi * k / N) * impares[k] for k in range(N // 2)]
     return [(pares[k] + T[k]) / 2 for k in range(N // 2)] + [(pares[k] - T[k]) / 2 for k in range(N // 2)]
 
-def scc_toeplitz(x, h):
+def suma_convolución_circular(x, h):
     """
-    Calcula la Suma de Convolución Circular (SCC) utilizando la matriz Toeplitz
-    y bucles for.
+    Calcula la Suma de Convolución Circular (SCC).
     """
     len_x = len(x)
     len_h = len(h)
@@ -96,17 +95,16 @@ def evaluar_rendimiento():
 
     # Gráfico de comparación de tiempos de ejecución
     plt.figure(figsize=(10, 5))
-    plt.plot(tamaños, tiempo_toeplitz, marker='s',color='red', label='SCC Toeplitz (O(N^2))')
-    plt.plot(tamaños, tiempo_fft, marker='^',color='blue', label='FFT (O(N log N))')
+    plt.plot(tamaños, tiempo_scc, marker='s', linestyle='-', color='black', label='SCC (O(N^2))')
+    plt.plot(tamaños, tiempo_fft, marker='^', linestyle='--', color='gray', label='FFT (O(N log N))')
     plt.xlabel('Tamaño de la señal (N)')
     plt.ylabel('Tiempo de ejecución (s)')
     plt.title('Comparación de tiempos de ejecución')
     plt.legend()
-    plt.grid(True, which="both", linestyle=":", alpha=0.7)
+    plt.grid()
     plt.xscale('log', base=2)  # Escala logarítmica para el eje x
-    plt.ylim(0, max(max(tiempo_toeplitz), max(tiempo_fft)) * 1.1)  # Asegura que el eje y comience en 0
+    plt.ylim(0, max(max(tiempo_scc), max(tiempo_fft)) * 1.1)  # Asegura que el eje y comience en 0
     plt.xlim(0, max(tamaños) * 1.1)  # Asegura que el eje x comience en 0
-    plt.tight_layout()
     plt.show()
 
     # Gráfico de error máximo absoluto
@@ -125,7 +123,7 @@ def evaluar_rendimiento():
 def menu():
     while True:
         print("\n--- Menú de Convolución ---")
-        print("1. Comparar tiempos entre SCC iterativa, Toeplitz y FFT")
+        print("1. Comparar tiempos entre SCC i y FFT")
         print("2. Salir")
         opcion = input("Seleccione una opción (1-2): ")
 
